@@ -11,6 +11,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -30,12 +35,16 @@ public class DukeFrame2 extends JFrame {
     public DukeFrame2() {
         initComponents();
     }
-    
-    public void setStopFlg(boolean stopFlg){
+
+    public void setStopFlg(boolean stopFlg) {
         this.stopFlg = stopFlg;
+        if (!this.stopFlg) {
+            actionThread.start();
+        }
+
     }
-    
-    public void setTurnFlg(boolean turnFlg){
+
+    public void setTurnFlg(boolean turnFlg) {
         this.turnFlg = turnFlg;
     }
 
@@ -44,11 +53,12 @@ public class DukeFrame2 extends JFrame {
         setUndecorated(true);
         setBackground(new Color(0x0, true));
         setResizable(false);
-        this.setMinimumSize(new Dimension(200, 200));
+        setAlwaysOnTop(true);
+        setMinimumSize(new Dimension(image1.getIconWidth(), image1.getIconHeight()));
 
         new Thread(new Runnable() {
             public void run() {
-                while(!isVisible()){
+                while (!isVisible()) {
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException ex) {
@@ -77,22 +87,116 @@ public class DukeFrame2 extends JFrame {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        
+
         Image img;
         if (imageFlg) {
             img = image1.getImage();
-        }else{
+        } else {
             img = image2.getImage();
         }
-        
-        Graphics2D g2d = (Graphics2D)g;
-        AffineTransform attr= AffineTransform.getTranslateInstance(1.0d, 1.0d);
-        if(turnFlg){
-            attr= AffineTransform.getScaleInstance(-1.0d, 1.0d);
+
+        Graphics2D g2d = (Graphics2D) g;
+        AffineTransform attr = AffineTransform.getTranslateInstance(1.0d, 1.0d);
+        if (turnFlg) {
+            attr = AffineTransform.getScaleInstance(-1.0d, 1.0d);
             attr.translate(-img.getWidth(this), 0);
         }
-        
+
         g2d.drawImage(img, attr, this);
+    }
+
+    //=======================================
+    private final Thread actionThread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            while (isVisible()) {
+                createRightRun(30).run();
+                waitDuke(5).run();
+                createRightRun(30).run();
+                waitDuke(5).run();
+                createLeftRun(30).run();
+                waitDuke(5).run();
+                createLeftRun(30).run();
+                waitDuke(5).run();
+            }
+        }
+    });
+
+    private Runnable createRightRun(int move) {
+        return () -> {
+            java.awt.GraphicsEnvironment env = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
+            java.awt.Rectangle desktopBounds = env.getMaximumWindowBounds();
+            
+            //右側に
+            java.awt.EventQueue.invokeLater(() -> {
+                setStopFlg(false);
+            });
+            java.awt.EventQueue.invokeLater(() -> {
+                setTurnFlg(false);
+            });
+            for (int i = 0; i < move; i++) {
+                java.awt.EventQueue.invokeLater(() -> {
+                    setLocation(getLocation().x + 5, getLocation().y);
+                });
+                try {
+                    Thread.sleep(50); //Sleepする
+                } catch (InterruptedException e) {
+                }
+                
+                if (desktopBounds.getWidth() <= getLocation().x || Thread.currentThread().isInterrupted()) {
+                    break;
+                }
+            }
+        };
+    }
+
+    private Runnable createLeftRun(int move) {
+        return () -> {
+            java.awt.GraphicsEnvironment env = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
+            java.awt.Rectangle desktopBounds = env.getMaximumWindowBounds();
+            
+            //左側に
+            java.awt.EventQueue.invokeLater(() -> {
+                setStopFlg(false);
+            });
+            java.awt.EventQueue.invokeLater(() -> {
+                setTurnFlg(true);
+            });
+            for (int i = 0; i < move; i++) {
+                java.awt.EventQueue.invokeLater(() -> {
+                    setLocation(getLocation().x - 5, getLocation().y);
+                });
+                try {
+                    Thread.sleep(50); //300ミリ秒Sleepする
+                } catch (InterruptedException e) {
+                }
+                
+                if (0 >= getLocation().x) {
+                    break;
+                }
+            }
+        };
+    }
+
+    private Runnable waitDuke(int cnt) {
+        return () -> {
+            int exitCnt = cnt;
+            boolean bTurn = true;
+            java.awt.EventQueue.invokeLater(() -> {
+                setStopFlg(true);
+            });
+            while ((exitCnt -= 1) > -1) {
+                boolean b = bTurn;
+                java.awt.EventQueue.invokeLater(() -> {
+                    setTurnFlg(b);
+                });
+                try {
+                    Thread.sleep(500); //Sleepする
+                    bTurn = !bTurn;
+                } catch (InterruptedException e) {
+                }
+            }
+        };
     }
 
 }

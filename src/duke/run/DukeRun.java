@@ -47,50 +47,50 @@ public class DukeRun {
         });
 
 
-        //右側に
-        for (int i = 0; i < 1000; i++) {
-            final int j = i;
-            java.awt.EventQueue.invokeLater(() -> {
-                frame.setLocation(frame.getLocation().x + 5, frame.getLocation().y);
-            });
-            try {
-                Thread.sleep(50); //300ミリ秒Sleepする
-            } catch (InterruptedException e) {
-            }
-
-            if (desktopBounds.getWidth() <= frame.getLocation().x) {
-                break;
-            }
-        }
-
-        //ターン
-        java.awt.EventQueue.invokeLater(() -> {
-            frame.setTurnFlg(true);
-        });
-        
-        //左側に
-        for (int i = 0; i < 1000; i++) {
-            final int j = i;
-            java.awt.EventQueue.invokeLater(() -> {
-                frame.setLocation(frame.getLocation().x - 5, frame.getLocation().y);
-            });
-            try {
-                Thread.sleep(50); //300ミリ秒Sleepする
-            } catch (InterruptedException e) {
-            }
-
-            if (0 >= frame.getLocation().x) {
-                break;
-            }
-        }
-
-        //終了
-        System.out.println("exit");
-
-        java.awt.EventQueue.invokeLater(() -> {
-            frame.setVisible(false);
-            frame.dispose();
-        });
+//        //右側に
+//        for (int i = 0; i < 1000; i++) {
+//            final int j = i;
+//            java.awt.EventQueue.invokeLater(() -> {
+//                frame.setLocation(frame.getLocation().x + 5, frame.getLocation().y);
+//            });
+//            try {
+//                Thread.sleep(50); //300ミリ秒Sleepする
+//            } catch (InterruptedException e) {
+//            }
+//
+//            if (desktopBounds.getWidth() <= frame.getLocation().x) {
+//                break;
+//            }
+//        }
+//
+//        //ターン
+//        java.awt.EventQueue.invokeLater(() -> {
+//            frame.setTurnFlg(true);
+//        });
+//        
+//        //左側に
+//        for (int i = 0; i < 1000; i++) {
+//            final int j = i;
+//            java.awt.EventQueue.invokeLater(() -> {
+//                frame.setLocation(frame.getLocation().x - 5, frame.getLocation().y);
+//            });
+//            try {
+//                Thread.sleep(50); //300ミリ秒Sleepする
+//            } catch (InterruptedException e) {
+//            }
+//
+//            if (0 >= frame.getLocation().x) {
+//                break;
+//            }
+//        }
+//
+//        //終了
+//        System.out.println("exit");
+//
+//        java.awt.EventQueue.invokeLater(() -> {
+//            frame.setVisible(false);
+//            frame.dispose();
+//        });
         
         //System.exit(0);
     }
